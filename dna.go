@@ -8,7 +8,7 @@ import (
 
 // structure for dna record
 type DnaRecord struct {
-	Id       string     `json:"id"`
+	Id       string     `json:"id" datastore:"-"`
 	Dna      mutant.Dna `json:"name"`
 	IsMutant bool       `json:"isMutant"`
 }
