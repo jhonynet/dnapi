@@ -18,7 +18,7 @@ func handleMutant(c *gin.Context) {
 		return
 	}
 	isMutant := mutant.IsMutant(requestData.Dna)
-	err := createDna(requestData.Dna, isMutant)
+	_, err := createDna(requestData.Dna, isMutant)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

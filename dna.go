@@ -30,16 +30,16 @@ func getDnaById(id string) (*DnaRecord, error) {
 }
 
 // create dna if not exists
-func createDna(dna mutant.Dna, isMutant bool) error {
+func createDna(dna mutant.Dna, isMutant bool) (*DnaRecord, error) {
 	ctx := context.Background()
 	uid := mutant.BuildUniqueId(dna)
 	record, err := getDnaById(uid)
 	if err != nil && err.Error() != "datastore: no such entity" {
-		return err
+		return record, err
 	}
 	// if record exists avoid creation
 	if record != nil && record.Id != "" {
-		return nil
+		return record, nil
 	}
 	// create new record and save
 	var newRecord = DnaRecord{
@@ -49,8 +49,8 @@ func createDna(dna mutant.Dna, isMutant bool) error {
 	}
 	// save
 	if _, err := dsClient.Put(ctx, getDnaKey(uid), &newRecord); err != nil {
-		return err
+		return &newRecord, err
 	}
 
-	return nil
+	return &newRecord, nil
 }
