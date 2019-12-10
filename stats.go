@@ -9,15 +9,12 @@ import (
 
 // structure for dna record
 type StatsRecord struct {
-	Id             string `json:"id"`
-	CountMutantDna int    `json:"count_mutant_dna"`
-	CountHumanDna  int    `json:"count_human_dna"`
+	CountMutantDna int `json:"count_mutant_dna"`
+	CountHumanDna  int `json:"count_human_dna"`
 }
 
-// key for datastore
-var statsKey = datastore.Key{
-	Kind: "Stats",
-	Name: "stats",
+func getStatsKey() *datastore.Key {
+	return datastore.NameKey("Stats", "stats", nil)
 }
 
 // /stats handler
@@ -49,14 +46,14 @@ func calcRatio(stats *StatsRecord) float64 {
 func getStats() (*StatsRecord, error) {
 	var stats StatsRecord
 	ctx := context.Background()
-	err := dsClient.Get(ctx, &statsKey, &stats)
+	err := dsClient.Get(ctx, getStatsKey(), &stats)
 	if err != nil && err.Error() != "datastore: no such entity" {
 		return &stats, err
 	}
 	if err != nil && err.Error() == "datastore: no such entity" {
 		stats.CountHumanDna = 0
 		stats.CountMutantDna = 0
-		_, err := dsClient.Put(ctx, &statsKey, stats)
+		_, err := dsClient.Put(ctx, getStatsKey(), &stats)
 		if err != nil {
 			return &stats, err
 		}
@@ -77,7 +74,7 @@ func IncreaseStat(kind string) error {
 		stats.CountMutantDna++
 	}
 	ctx := context.Background()
-	_, err = dsClient.Put(ctx, &statsKey, stats)
+	_, err = dsClient.Put(ctx, getStatsKey(), stats)
 	if err != nil {
 		return err
 	}
