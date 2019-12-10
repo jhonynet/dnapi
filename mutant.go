@@ -7,12 +7,12 @@ import (
 )
 
 // structure for req/res
-type RequestData struct {
+type DnaRequestData struct {
 	Dna []string `json:"dna" binding:"required,squareMatrix,validDnaCharacters"`
 }
 
 func handleMutant(c *gin.Context) {
-	var requestData RequestData
+	var requestData DnaRequestData
 	if err := c.ShouldBindJSON(&requestData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

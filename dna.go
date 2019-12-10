@@ -8,7 +8,7 @@ import (
 
 // structure for dna record
 type DnaRecord struct {
-	Id       string     `json:"id" datastore:"-"`
+	Id       string     `json:"id"`
 	Dna      mutant.Dna `json:"name"`
 	IsMutant bool       `json:"isMutant"`
 }
@@ -49,6 +49,17 @@ func createDna(dna mutant.Dna, isMutant bool) (*DnaRecord, error) {
 	}
 	// save
 	if _, err := dsClient.Put(ctx, getDnaKey(uid), &newRecord); err != nil {
+		return &newRecord, err
+	}
+
+	// if save is ok increase stats
+	if isMutant {
+		err = IncreaseStat("mutant")
+	} else {
+		err = IncreaseStat("human")
+	}
+
+	if err != nil {
 		return &newRecord, err
 	}
 
