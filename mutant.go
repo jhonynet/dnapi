@@ -6,19 +6,26 @@ import (
 	"net/http"
 )
 
+// structure for req/res
 type RequestData struct {
 	Dna []string `json:"dna" binding:"required,squareMatrix,validDnaCharacters"`
 }
 
 func handleMutant(c *gin.Context) {
-	var requestData  RequestData
+	var requestData RequestData
 	if err := c.ShouldBindJSON(&requestData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if mutant.IsMutant(requestData.Dna) {
-		c.JSON(http.StatusOK, gin.H{})
+	isMutant := mutant.IsMutant(requestData.Dna)
+	err := createDna(requestData.Dna, isMutant)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if isMutant {
+		c.String(http.StatusOK, "")
 	} else {
-		c.JSON(http.StatusForbidden, gin.H{})
+		c.String(http.StatusForbidden, "")
 	}
 }

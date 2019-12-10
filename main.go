@@ -8,6 +8,8 @@ import (
 func main() {
 	r := gin.Default()
 	registerCustomValidators()
+	initDsClient()
+	defer closeDsClient()
 	r.GET("/", handleIndex)
 	r.POST("/mutant", handleMutant)
 	r.GET("/stats", handleStats)
